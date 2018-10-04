@@ -1,9 +1,11 @@
 package com.nanda.fileencoder.activity;
 
+import android.app.ProgressDialog;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +16,7 @@ import android.widget.Toast;
 
 import com.nanda.fileencoder.R;
 import com.nanda.fileencoder.adapter.AssetListAdapter;
+import com.nanda.fileencoder.utils.CommonUtils;
 import com.nanda.fileencoder.utils.EncoderUtils;
 import com.nanda.fileencoder.utils.FileUtils;
 
@@ -38,6 +41,7 @@ public class EncodeActivity extends AppCompatActivity implements AssetListAdapte
     private AssetListAdapter adapter;
 
     private List<String> fileList;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +52,8 @@ public class EncodeActivity extends AppCompatActivity implements AssetListAdapte
         adapter = new AssetListAdapter(this, this);
         recyclerview.setLayoutManager(new LinearLayoutManager(this));
         recyclerview.setAdapter(adapter);
+
+        dialog = CommonUtils.showProgressDialog(this, "Encoding...");
 
         AssetManager assetManager = getAssets();
         try {
@@ -99,9 +105,15 @@ public class EncodeActivity extends AppCompatActivity implements AssetListAdapte
             writer.close();
             fileOutputStream.flush();
             fileOutputStream.close();
+            if (dialog != null && dialog.isShowing()) {
+                dialog.dismiss();
+            }
             return true;
         } catch (IOException e) {
             e.printStackTrace();
+            if (dialog != null && dialog.isShowing()) {
+                dialog.dismiss();
+            }
             return false;
         }
     }
@@ -115,13 +127,23 @@ public class EncodeActivity extends AppCompatActivity implements AssetListAdapte
     }
 
     @Override
-    public void onEncodeClick(String fileName) {
+    public void onEncodeClick(final String fileName) {
 
-        try {
-            encodeFileToBase64Binary(fileName);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (dialog != null && !dialog.isShowing()) {
+            dialog.show();
         }
-
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    encodeFileToBase64Binary(fileName);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    if (dialog != null && dialog.isShowing()) {
+                        dialog.dismiss();
+                    }
+                }
+            }
+        }, 50);
     }
 }

@@ -1,7 +1,9 @@
 package com.nanda.fileencoder.activity;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,6 +16,7 @@ import android.widget.Toast;
 
 import com.nanda.fileencoder.R;
 import com.nanda.fileencoder.adapter.FileListAdapter;
+import com.nanda.fileencoder.utils.CommonUtils;
 import com.nanda.fileencoder.utils.EncoderUtils;
 
 import java.io.BufferedReader;
@@ -37,6 +40,7 @@ public class DecodeActvity extends AppCompatActivity implements FileListAdapter.
 
     private FileListAdapter adapter;
     private List<File> fileList;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,6 +48,7 @@ public class DecodeActvity extends AppCompatActivity implements FileListAdapter.
         setContentView(R.layout.activity_encode_decode);
         ButterKnife.bind(this);
 
+        dialog = CommonUtils.showProgressDialog(this, "Decoding...");
         adapter = new FileListAdapter(this, this);
 
         fileList = getFileList();
@@ -131,9 +136,31 @@ public class DecodeActvity extends AppCompatActivity implements FileListAdapter.
         }
     }
 
-    @Override
-    public void onFileClicked(File file) {
+    private void hideProgressDialog() {
+        if (dialog != null && dialog.isShowing()) {
+            dialog.dismiss();
+        }
+    }
 
+    private void showProgressDialog() {
+        if (dialog != null && !dialog.isShowing()) {
+            dialog.show();
+        }
+    }
+
+    @Override
+    public void onFileClicked(final File file) {
+        showProgressDialog();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                decodeToAudio(file);
+            }
+        }, 50);
+
+    }
+
+    private void decodeToAudio(File file) {
         try {
             String encodedString = getStringFromFile(file.getAbsolutePath());
             if (!TextUtils.isEmpty(encodedString)) {
@@ -145,11 +172,11 @@ public class DecodeActvity extends AppCompatActivity implements FileListAdapter.
                         Toast.makeText(this, "Decoded Success!", Toast.LENGTH_SHORT).show();
                     } else Toast.makeText(this, "Decoded failed!", Toast.LENGTH_SHORT).show();
                 } else Toast.makeText(this, "Decoded Array is empty!", Toast.LENGTH_SHORT).show();
-
             } else Toast.makeText(this, "Encoded file is empty!", Toast.LENGTH_SHORT).show();
+            hideProgressDialog();
         } catch (Exception e) {
             e.printStackTrace();
+            hideProgressDialog();
         }
-
     }
 }
