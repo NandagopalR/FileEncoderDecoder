@@ -49,7 +49,7 @@ public class DecodeActvity extends AppCompatActivity implements FileListAdapter.
         ButterKnife.bind(this);
 
         dialog = CommonUtils.showProgressDialog(this, "Decoding...");
-        adapter = new FileListAdapter(this, this);
+        adapter = new FileListAdapter(this, false, this);
 
         fileList = getFileList();
 

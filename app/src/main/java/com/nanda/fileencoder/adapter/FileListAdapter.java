@@ -24,9 +24,11 @@ public class FileListAdapter extends RecyclerView.Adapter<FileListAdapter.FileVi
     private Context context;
     private List<File> fileList;
     private FileClickListener listener;
+    private boolean isAESType;
 
-    public FileListAdapter(Context context, FileClickListener listener) {
+    public FileListAdapter(Context context, boolean isAESType, FileClickListener listener) {
         this.context = context;
+        this.isAESType = isAESType;
         this.listener = listener;
         fileList = new ArrayList<>();
     }
@@ -80,6 +82,9 @@ public class FileListAdapter extends RecyclerView.Adapter<FileListAdapter.FileVi
         public void bindDataToView(File file) {
             tvFileName.setText(file.getName());
             tvFilePath.setText(file.getAbsolutePath());
+            if (isAESType) {
+                btnEncode.setText("Decrypt");
+            } else btnEncode.setText("Decode");
         }
 
         @OnClick(R.id.btn_Encode)

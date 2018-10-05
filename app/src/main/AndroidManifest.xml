@@ -23,6 +23,8 @@
         </activity>
         <activity android:name=".activity.EncodeActivity" />
         <activity android:name=".activity.DecodeActvity" />
+        <activity android:name=".activity.AESEncryptionActivity" />
+        <activity android:name=".activity.AESDecryptionActivity" />
     </application>
 
 </manifest>

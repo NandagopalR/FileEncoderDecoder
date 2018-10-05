@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.nanda.fileencoder.R;
@@ -22,9 +23,11 @@ public class AssetListAdapter extends RecyclerView.Adapter<AssetListAdapter.Asse
     private Context context;
     private EncodeClickListener listener;
     private List<String> filePathList;
+    private boolean isAESType;
 
-    public AssetListAdapter(Context context, EncodeClickListener listener) {
+    public AssetListAdapter(Context context, boolean isAESType, EncodeClickListener listener) {
         this.context = context;
+        this.isAESType = isAESType;
         this.listener = listener;
         filePathList = new ArrayList<>();
     }
@@ -66,6 +69,8 @@ public class AssetListAdapter extends RecyclerView.Adapter<AssetListAdapter.Asse
         TextView tvFileName;
         @BindView(R.id.tv_file_path)
         TextView tvFilePath;
+        @BindView(R.id.btn_Encode)
+        Button btnEncode;
 
         public AssetViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -74,6 +79,9 @@ public class AssetListAdapter extends RecyclerView.Adapter<AssetListAdapter.Asse
 
         public void bindDataToView(String fileName) {
             tvFileName.setText(fileName);
+            if (isAESType) {
+                btnEncode.setText("Encrypt");
+            } else btnEncode.setText("Encode");
         }
 
         @OnClick(R.id.btn_Encode)

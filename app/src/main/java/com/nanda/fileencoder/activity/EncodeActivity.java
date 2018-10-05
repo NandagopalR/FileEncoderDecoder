@@ -49,7 +49,7 @@ public class EncodeActivity extends AppCompatActivity implements AssetListAdapte
         setContentView(R.layout.activity_encode_decode);
         ButterKnife.bind(this);
 
-        adapter = new AssetListAdapter(this, this);
+        adapter = new AssetListAdapter(this, false, this);
         recyclerview.setLayoutManager(new LinearLayoutManager(this));
         recyclerview.setAdapter(adapter);
 
